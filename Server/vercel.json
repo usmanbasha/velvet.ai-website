@@ -1,0 +1,46 @@
+{
+  "functions": {
+    "api/users/signup": {
+      "handler": "Server/index.handler",
+      "methods": ["POST"]
+    },
+    "api/users/logIn": {
+      "handler": "Server/index.handler",
+      "methods": ["POST"]
+    },
+    "api/users/logout": {
+      "handler": "Server/index.handler",
+      "methods": ["POST"]
+    },
+    "api/users/profile": {
+      "handler": "Server/index.handler",
+      "methods": ["GET"]
+    },
+    "api/users/profile/:email": {
+      "handler": "Server/index.handler",
+      "methods": ["GET"]
+    }
+  },
+
+  "installCommand": "npm install",
+  "name": "my-vercel-project",
+  "version": 2,
+  "builds": [
+    {
+      "src": "Server/index.js",
+      "use": "@vercel/node"
+    },
+    {
+        "src": "Client/**/*",
+        "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {"src": "/api/users/signup","dest":"/Server/index.js"},
+    {"src": "/api/users/logIn","dest":"/Server/index.js"},
+    {"src": "/api/users/logout","dest":"/Server/index.js"},
+    {"src": "/api/users/profile","dest":"/Server/index.js"},
+    {"src": "/api/users/profile/:email","dest":"/Server/index.js"},
+    {"src": "/(.*)","dest":"/Client/$1"}
+  ]
+}

@@ -3,6 +3,9 @@ import bgComponent1 from "./images/main-page-component-1.png";
 import { HiArrowLongUp } from "react-icons/hi2";
 import "./stylesheets/Main.css";
 import ftImg1 from "./images/feature-1-image.svg";
+import apk1 from "./images/existential.zip";
+import apk2 from "./images/sampleapk2.apk";
+import apk3 from "./images/sampleapk3.apk";
 import ftImg2 from "./images/feature-2-image.svg";
 import ftImg3 from "./images/feature-3-image.svg";
 import pfImg1 from './images/profile-img-1.svg';
@@ -20,13 +23,13 @@ function main() {
       let downloadFile;
       switch (selectedOption) {
         case "PC":
-          downloadFile = bgComponent1;
+          downloadFile = apk1;
           break;
         case "Tablet":
-          downloadFile = ftImg1;
+          downloadFile = apk2;
           break;
         case "Mobile":
-          downloadFile = ftImg2;
+          downloadFile = apk3;
           break;
         default:
           break;

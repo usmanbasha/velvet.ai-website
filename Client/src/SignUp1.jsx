@@ -18,7 +18,7 @@ const SignUp = () => {
     setSuccess("");
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/users/signup",
+        "process.env.REACT_APP_BASEURL/api/users/signup",
         {
           username,
           email,

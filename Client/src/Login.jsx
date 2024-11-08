@@ -24,7 +24,7 @@ function Login() {
     localStorage.setItem("email", email);
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/users/logIn",
+        "process.env.REACT_APP_BASEURL/api/users/logIn",
         { email, password },
         {
           headers: { "Content-Type": "application/json" },

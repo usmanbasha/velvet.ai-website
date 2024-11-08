@@ -4,51 +4,93 @@ const User = require("../models/User");
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const ensureAuthenticated = require('../middleware/authMiddleware');
-
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/') // Ensure this directory exists
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+  }
+});
+const upload = multer({ storage: storage });
 
 // Route for creating/updating a user profile (no image handling)
-router.post("/profile", async (req, res) => {
+// router.post("/profile", async (req, res) => {
+//   const { image, username, name, mobile, comment } = req.body;
+
+//   console.log("Received Data:", req.body); // Log received data for debugging
+
+//   try {
+//     // Validate required fields
+//     if (!username || !name) {
+//       return res.status(400).json({ message: "Name and Username are required." });
+//     }
+    
+//     if(mobile.length!=10){
+//       return res.status(400).json({message: "Enter valid Mobile number"});
+//     }
+
+//     for(i=0;i<mobile.length;i++){
+//       if(isNaN(mobile[i])){
+//         return res.status(400).json({ message: "Mobile number should contain only numbers." });
+//       }
+//     }
+
+
+//     // Check if the user already exists by username
+//     const existingUser = await User.findOne({ username });
+
+//     if (existingUser) {
+//       // Update existing user's profile information
+//       existingUser.name = name;
+//       existingUser.mobile = mobile;
+//       existingUser.comment = comment;
+
+//       await existingUser.save(); // Save the updated user profile
+//       return res.status(200).json({ message: "Profile updated successfully" });
+//     }
+
+//     // If the user does not exist, return 404
+//     return res.status(404).json({ message: "User not found." });
+//   } catch (error) {
+//     console.error("Error creating/updating profile:", error);
+//     return res.status(500).json({ message: "Internal server error", error });
+//   }
+// });
+
+router.post("/profile", upload.single("image"), async (req, res) => {
   const { username, name, mobile, comment } = req.body;
-
-  console.log("Received Data:", req.body); // Log received data for debugging
-
+  const image = req.file ? req.file.path : null; // Use uploaded image path if available
+  
   try {
-    // Validate required fields
     if (!username || !name) {
       return res.status(400).json({ message: "Name and Username are required." });
     }
-    
-    if(mobile.length!=10){
-      return res.status(400).json({message: "Enter valid Mobile number"});
+
+    if (mobile.length !== 10 || isNaN(mobile)) {
+      return res.status(400).json({ message: "Enter a valid 10-digit mobile number." });
     }
 
-    for(i=0;i<mobile.length;i++){
-      if(isNaN(mobile[i])){
-        return res.status(400).json({ message: "Mobile number should contain only numbers." });
-      }
-    }
-
-
-    // Check if the user already exists by username
     const existingUser = await User.findOne({ username });
 
     if (existingUser) {
-      // Update existing user's profile information
       existingUser.name = name;
       existingUser.mobile = mobile;
       existingUser.comment = comment;
-
-      await existingUser.save(); // Save the updated user profile
+      if (image) existingUser.image = image; // Update image path if a new image was uploaded
+      
+      await existingUser.save();
       return res.status(200).json({ message: "Profile updated successfully" });
     }
-
-    // If the user does not exist, return 404
     return res.status(404).json({ message: "User not found." });
   } catch (error) {
     console.error("Error creating/updating profile:", error);
     return res.status(500).json({ message: "Internal server error", error });
   }
+  
 });
+
 
 // GET: Fetch user profile
 router.get("/profile/:email", async (req, res) => {

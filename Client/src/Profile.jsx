@@ -3,72 +3,71 @@ import axios from "axios";
 import "./stylesheets/Profile.css";
 
 function Profile() {
-  const [profileData, setProfileData] = useState(null); // Store fetched profile data
+  const [profileData, setProfileData] = useState(null);
   const [formData, setFormData] = useState({
     username: "",
     name: "",
     mobile: "",
     comment: "",
-  }); // Store form input data
-  const [isEditMode, setIsEditMode] = useState(false); // Toggle between view and edit mode
-  const [error, setError] = useState(""); // Display error messages
-  const [success, setSuccess] = useState(""); // Display success messages
+    image: null,
+  });
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  // Fetch profile data on component load
   useEffect(() => {
     const email = localStorage.getItem("email");
     const fetchProfileData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/users/profile/${email}`
+          `process.env.REACT_APP_BASEURL/api/users/profile/${email}`
         );
         setProfileData(response.data);
-        setFormData(response.data); // Set form data with fetched profile data
+        setFormData({ ...response.data, image: null });
       } catch (error) {
         setError("Error fetching profile data.");
-        console.error("Fetch Error:", error); // Log the actual error for debugging
+        console.error("Fetch Error:", error);
       }
     };
-
-    // Fetch data as soon as the component mounts
     fetchProfileData();
-  }, []); // No dependencies to trigger fetch on component mount
+  }, []);
 
-  // When the "Edit" button is clicked, toggle the form into edit mode
-  const handleEditClick = () => {
-    setIsEditMode(true);
-  };
+  const handleEditClick = () => setIsEditMode(true);
 
-  // Handle form field changes
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+    const newValue = type === "file" ? e.target.files[0] : value;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: newValue,
     });
   };
 
-  // Submit the updated profile data
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent form from refreshing the page
+    e.preventDefault();
     setError("");
     setSuccess("");
 
     try {
+      const formDataToSend = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        formDataToSend.append(key, value);
+      });
+
       const response = await axios.post(
-        "http://localhost:5000/api/users/profile",
-        formData,
+        "process.env.REACT_APP_BASEURL/api/users/profile",
+        formDataToSend,
         {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         }
       );
-      setSuccess(response.data.message || "Profile updated successfully."); // Show success message
-      setProfileData(formData); // Update the displayed profile data with new values
-      setIsEditMode(false); // Switch back to view mode
+      setSuccess(response.data.message || "Profile updated successfully.");
+      setProfileData({ ...formData, image: response.data.imageUrl });
+      setIsEditMode(false);
     } catch (error) {
-      console.error("Submit Error:", error); // Log error for debugging
+      console.error("Submit Error:", error);
       setError(
         error.response
           ? error.response.data.message
@@ -82,13 +81,21 @@ function Profile() {
       <div className="profile-head">Your Profile</div>
 
       {profileData && !isEditMode ? (
-        // Display profile data when not in edit mode
         <div id="profile-display">
+          <p className="edit-sec">
+            <strong>Profile photo: </strong>
+            {profileData.image && (
+              <img
+                src={`process.env.REACT_APP_BASEURL/${profileData.image}`} // Full path to display uploaded image
+                alt="Profile"
+                style={{ width: "200px", marginTop: "10px" }}
+              />
+            )}
+          </p>
           <p className="edit-sec">
             <strong>Username: </strong> {profileData.username}
           </p>
           <p className="edit-sec">
-            {" "}
             <strong>Name: </strong> {profileData.name}
           </p>
           <p className="edit-sec">
@@ -102,8 +109,23 @@ function Profile() {
           </button>
         </div>
       ) : (
-        // Display the form when in edit mode
         <form className="profile-sec" onSubmit={handleSubmit}>
+          <label className="edit-sec">
+            <span className="input-name">Profile Photo:</span>
+            <input
+              type="file"
+              name="image"
+              accept="image/*"
+              onChange={handleChange}
+            />
+            {formData.image && (
+              <img
+                src={URL.createObjectURL(formData.image)}
+                alt="Preview"
+                style={{ width: "200px", marginTop: "10px" }}
+              />
+            )}
+          </label>
           <label className="edit-sec">
             <span className="input-name">Username:</span>
             <input
@@ -111,6 +133,7 @@ function Profile() {
               name="username"
               value={formData.username}
               onChange={handleChange}
+              required
             />
           </label>
           <label className="edit-sec">
@@ -120,15 +143,19 @@ function Profile() {
               name="name"
               value={formData.name}
               onChange={handleChange}
+              required
             />
           </label>
           <label className="edit-sec">
             <span className="input-name">Mobile:</span>
             <input
-              type="text"
+              type="tel"
               name="mobile"
               value={formData.mobile}
               onChange={handleChange}
+              required
+              pattern="[0-9]{10}" // Validates 10-digit numbers
+              title="Enter a 10-digit mobile number"
             />
           </label>
           <label className="edit-sec">
@@ -140,7 +167,6 @@ function Profile() {
             />
           </label>
 
-          {/* Display success or error messages */}
           {success && <p className="success-message">{success}</p>}
           {error && <p className="error-message">{error}</p>}
 

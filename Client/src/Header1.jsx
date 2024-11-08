@@ -1,3 +1,4 @@
+// Start of Selection
 import React from "react";
 import "./stylesheets/Header.css";
 import ValvetTitle from "./images/ValvetTitle.svg";
@@ -5,14 +6,14 @@ import { CgProfile } from "react-icons/cg";
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
-axios.defaults.baseURL = 'http://localhost:5000'; // Adjust the URL as needed
+axios.defaults.baseURL = process.env.REACT_APP_BASEURL; // Adjust the URL as needed
 
 function Header({ setPage }) {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:5000/api/users/logout", {}, {
+      await axios.post(`${process.env.REACT_APP_BASEURL}/api/users/logout`, {}, {
         withCredentials: true, // Important for cookie-based sessions
       });
       // Clear any local storage or application state related to the user
