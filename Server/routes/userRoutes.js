@@ -17,6 +17,17 @@ router.post("/profile", async (req, res) => {
     if (!username || !name) {
       return res.status(400).json({ message: "Name and Username are required." });
     }
+    
+    if(mobile.length!=10){
+      return res.status(400).json({message: "Enter valid Mobile number"});
+    }
+
+    for(i=0;i<mobile.length;i++){
+      if(isNaN(mobile[i])){
+        return res.status(400).json({ message: "Mobile number should contain only numbers." });
+      }
+    }
+
 
     // Check if the user already exists by username
     const existingUser = await User.findOne({ username });
