@@ -16,19 +16,72 @@
     background-size: auto;
 }
 
+/* #downloader {
+    display: flex;
+    flex-direction: column;
+    margin: 30px;
+    border-radius: 60px;
+    align-items: center;
+    
+    background-repeat: no-repeat;
+    background-size: 1510px;
+    height: auto;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
+    padding-bottom: 30px;
+} */
+
 #downloader {
     display: flex;
     flex-direction: column;
     margin: 30px;
     border-radius: 60px;
     align-items: center;
-    background: url('../images/main-page-component-1.png');
+
+    background: rgba(255, 255, 255, 0.15); /* Transparent base for glass effect */
+    backdrop-filter: blur(20px) saturate(200%); /* Stronger blur and vibrant saturation */
+    -webkit-backdrop-filter: blur(20px) saturate(200%);
+    border: 1.5px solid rgba(255, 255, 255, 0.3); /* Uniform and prominent border */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* Balanced shadow for depth */
     background-repeat: no-repeat;
     background-size: 1510px;
     height: auto;
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
-    padding-bottom: 30px;
+    padding: 20px 30px; /* Adjusted padding for symmetry */
+    position: relative;
+    overflow: hidden;
 }
+
+/* Subtle highlight for a consistent reflection */
+#downloader::before {
+    content: "";
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    
+    border-radius: 50%;
+    z-index: 1;
+    pointer-events: none;
+    filter: blur(15px);
+    opacity: 0.6;
+}
+
+/* Fine grain texture for a frosted look */
+#downloader::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    opacity: 0.4;
+    z-index: 0;
+    pointer-events: none;
+}
+
+
 
 span {
     color: #1D1D1D;

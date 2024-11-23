@@ -8,6 +8,7 @@ const userRoutes = require("./routes/userRoutes");
 require("./middleware/passportConfig"); // Adjust path if necessary
 const bodyParser = require("body-parser");
 
+
 dotenv.config(); // Load environment variables
 
 const app = express(); // Initialize the Express app
@@ -17,28 +18,30 @@ const PORT = process.env.PORT || 5000;
 app.use(bodyParser.json());
 
 // CORS middleware
-app.use(cors({
-  origin: 'http://localhost:3000', // Adjust based on frontend port
-  credentials: true, // Required for session-based auth to work
-}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_PORT || "http://localhost:3000",
+    credentials: true,
+  })
+);
 
 // Middleware for parsing URL-encoded data and JSON
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve uploaded files statically
-app.use('/uploads', express.static('uploads'));
+app.use("/uploads", express.static("uploads"));
 
 // Session management
 app.use(
   session({
-    secret: "yourSecretKey",
+    secret: process.env.SESSION_SECRET || "fallbackSecret",
     resave: false,
     saveUninitialized: true,
     cookie: {
-      secure: false, // Set to true if using HTTPS
-      httpOnly: true,
-      sameSite: 'none', // Allow cross-origin cookies
+      secure: process.env.NODE_ENV === "production", // Requires HTTPS in production
+      httpOnly: true, // Protects against XSS
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Adjust for dev/prod
     },
   })
 );

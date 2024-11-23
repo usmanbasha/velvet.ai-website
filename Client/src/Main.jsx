@@ -1,6 +1,4 @@
 import React from "react";
-import bgComponent1 from "./images/main-page-component-1.png";
-import { HiArrowLongUp } from "react-icons/hi2";
 import "./stylesheets/Main.css";
 import ftImg1 from "./images/feature-1-image.svg";
 import apk1 from "./images/existential.zip";
